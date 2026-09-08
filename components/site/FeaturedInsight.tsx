@@ -4,7 +4,7 @@ import { brand } from "@/lib/brand";
 export function FeaturedInsight() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-4">
-      <div className="rounded-3xl bg-mint-50 border border-mint-200/60 p-8 md:p-10 flex flex-col md:flex-row items-center gap-8">
+      <div className="rounded-3xl bg-cream border border-ink-300/30 p-8 md:p-10 flex flex-col md:flex-row items-center gap-8">
         <div className="flex-1">
           <div className="text-xs font-semibold uppercase tracking-widest text-mint-600 mb-3">
             Featured Insight

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { CtaLink } from "@/components/site/CtaLink";
 import { brand } from "@/lib/brand";
 
 const tiers = [
@@ -43,11 +44,11 @@ export function PricingTiles() {
             key={tier.term}
             className={cn(
               "relative rounded-3xl bg-white p-8 shadow-sm border transition-all hover:shadow-lg hover:-translate-y-0.5",
-              tier.featured ? "border-mint-500 ring-1 ring-mint-500/50" : "border-ink-300/20",
+              tier.featured ? "border-ink-900 ring-1 ring-ink-900/40" : "border-ink-300/20",
             )}
           >
             {tier.featured && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-mint-500 text-white text-xs font-semibold px-3 py-1 shadow">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-ink-900 text-white text-xs font-semibold px-3 py-1 shadow">
                 Most popular
               </div>
             )}
@@ -86,12 +87,12 @@ export function PricingTiles() {
                 </span>
               </div>
             </div>
-            <a
-              href="/#quote"
-              className="mt-8 flex items-center justify-center rounded-full bg-mint-500 hover:bg-mint-600 text-white font-semibold py-3 transition-colors"
+            <CtaLink
+              href="/quotefc"
+              className="mt-8 flex items-center justify-center rounded-full bg-ink-900 hover:bg-ink-700 text-white font-semibold py-3 transition-colors"
             >
               Get My Quote
-            </a>
+            </CtaLink>
           </div>
         ))}
       </div>

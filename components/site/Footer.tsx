@@ -61,7 +61,8 @@ export function Footer() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (zip.trim()) router.push("/quote");
+                if (zip.trim())
+                  router.push(`/quotefc${window.location.search}`);
               }}
               className="mt-5 flex gap-2 max-w-md"
             >
@@ -72,11 +73,11 @@ export function Footer() {
                 value={zip}
                 onChange={(e) => setZip(e.target.value.replace(/\D/g, ""))}
                 placeholder="Zip Code"
-                className="flex-1 rounded-full bg-white text-ink-900 placeholder-ink-500 px-5 py-3 outline-none focus:ring-2 focus:ring-mint-500"
+                className="flex-1 rounded-full bg-white text-ink-900 placeholder-ink-500 px-5 py-3 outline-none focus:ring-2 focus:ring-mint-400"
               />
               <button
                 type="submit"
-                className="rounded-full bg-mint-500 hover:bg-mint-600 text-white font-semibold px-5 py-3 flex items-center gap-1 transition-colors"
+                className="rounded-full bg-white hover:bg-mint-50 text-ink-900 font-semibold px-5 py-3 flex items-center gap-1 transition-colors"
               >
                 Get My Quote <ArrowRight size={16} />
               </button>

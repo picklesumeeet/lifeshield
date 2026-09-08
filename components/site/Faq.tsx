@@ -39,7 +39,7 @@ const faqs = [
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section className="bg-mint-50/60">
+    <section className="bg-cream border-y border-ink-300/20">
       <div className="mx-auto max-w-7xl px-6 py-20 md:py-28 grid md:grid-cols-3 gap-12">
         <div>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-mint-900 tracking-tight leading-tight">
@@ -49,7 +49,7 @@ export function Faq() {
             Ready to understand life insurance better? We&apos;ve got answers and
             resources to help.
           </p>
-          <button className="mt-6 rounded-full bg-mint-700 hover:bg-mint-800 text-white text-sm font-semibold px-6 py-3 transition-colors">
+          <button className="mt-6 rounded-full bg-ink-900 hover:bg-ink-700 text-white text-sm font-semibold px-6 py-3 transition-colors">
             SEE ALL
           </button>
         </div>
