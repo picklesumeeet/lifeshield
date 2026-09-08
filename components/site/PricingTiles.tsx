@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { brand } from "@/lib/brand";
 
@@ -87,12 +86,12 @@ export function PricingTiles() {
                 </span>
               </div>
             </div>
-            <Link
-              href="/quote"
+            <a
+              href="/#quote"
               className="mt-8 flex items-center justify-center rounded-full bg-mint-500 hover:bg-mint-600 text-white font-semibold py-3 transition-colors"
             >
               Get My Quote
-            </Link>
+            </a>
           </div>
         ))}
       </div>

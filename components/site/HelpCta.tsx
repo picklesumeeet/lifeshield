@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { brand } from "@/lib/brand";
 
 export function HelpCta() {
@@ -22,12 +21,12 @@ export function HelpCta() {
               {brand.phone}
             </a>
             <div className="mt-6">
-              <Link
-                href="/quote"
+              <a
+                href="/#quote"
                 className="inline-flex items-center justify-center rounded-full bg-white text-mint-800 font-semibold px-7 py-3.5 hover:bg-mint-50 transition-colors shadow-md"
               >
                 Get Started
-              </Link>
+              </a>
             </div>
           </div>
           <div className="hidden md:flex justify-end">

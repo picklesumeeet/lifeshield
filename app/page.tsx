@@ -1,5 +1,6 @@
 import { Header } from "@/components/site/Header";
 import { Hero } from "@/components/site/Hero";
+import { QuoteEmbed } from "@/components/site/QuoteEmbed";
 import { PricingTiles } from "@/components/site/PricingTiles";
 import { Testimonials } from "@/components/site/Testimonials";
 import { FeaturedInsight } from "@/components/site/FeaturedInsight";
@@ -13,6 +14,7 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <Hero />
+        <QuoteEmbed />
         <PricingTiles />
         <Testimonials />
         <FeaturedInsight />

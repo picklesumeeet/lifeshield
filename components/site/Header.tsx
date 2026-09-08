@@ -52,19 +52,19 @@ export function Header() {
                 <ChevronDown size={14} />
               </button>
             ))}
-            <Link
-              href="/quote"
+            <a
+              href="/#quote"
               className="rounded-full bg-mint-500 hover:bg-mint-600 text-white text-sm font-semibold px-5 py-2.5 transition-colors shadow-sm"
             >
               Get My Quote
-            </Link>
+            </a>
           </nav>
-          <Link
-            href="/quote"
+          <a
+            href="/#quote"
             className="md:hidden rounded-full bg-mint-500 text-white text-sm font-semibold px-4 py-2"
           >
             Get Quote
-          </Link>
+          </a>
         </div>
       </div>
     </header>
