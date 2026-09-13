@@ -7,7 +7,7 @@
  * Prints the plaintext key ONCE. Save it — it cannot be recovered from the database.
  */
 import { createClient } from "@supabase/supabase-js";
-import { generateApiKey } from "../lib/api/apiKeyAuth";
+import { generateApiKey } from "../lib/api/apiKeyCrypto";
 import type { Database } from "../lib/supabase/types";
 
 async function main() {
