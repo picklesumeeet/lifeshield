@@ -73,6 +73,15 @@ export const leadPayloadSchema = z
     utm_campaign: optionalString,
     utm_content: optionalString,
     utm_term: optionalString,
+
+    // Offer18 tracking. `tid` is the click/transaction id from Offer18; when
+    // present on a stored lead we fire an approve conversion callback.
+    tid: optionalString,
+    adv_sub1: optionalString,
+    adv_sub2: optionalString,
+    adv_sub3: optionalString,
+    adv_sub4: optionalString,
+    adv_sub5: optionalString,
   })
   .refine((v) => v.consent_given === true, {
     path: ["consent_given"],

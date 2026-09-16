@@ -118,6 +118,21 @@ Leads posted with a `cq_test_…` key are stored with `is_test = true` in our da
 | `utm_content` | string | Marketing attribution. |
 | `utm_term` | string | Marketing attribution. |
 
+### 4.4 Offer18 tracking (optional)
+
+If the lead originated from an Offer18-tracked click, include the transaction id so we can fire the conversion callback on your behalf. When `tid` is present on a **live** (non-test) lead that we successfully store, we automatically POST an `approve` (`status=1`) to the Offer18 Conversion API. Every attempt is recorded in our `offer18_postbacks` audit table.
+
+| Field | Type | Description |
+|:---|:---|:---|
+| `tid` | string | Offer18 transaction id captured from the click. |
+| `adv_sub1` – `adv_sub5` | string | Optional advertiser sub-parameters forwarded verbatim to Offer18. |
+
+Rules:
+
+- Test leads (`test: true` or `cq_test_…` key) never trigger an Offer18 callback.
+- Duplicate submissions (§7) do not re-fire the callback.
+- Callback failures do not fail the lead — the lead is still stored and returned `200`.
+
 ---
 
 ## 5. Example request
@@ -375,6 +390,8 @@ If either side observes an anomaly, notify the counterparty within 1 business ho
 | `street_address` | ⬜ | string | |
 | `city` | ⬜ | string | |
 | `utm_*` | ⬜ | string | Attribution |
+| `tid` | ⬜ | string | Offer18 transaction id — triggers auto-approve conversion callback |
+| `adv_sub1`–`adv_sub5` | ⬜ | string | Forwarded to Offer18 with the conversion |
 
 **Legend:** ✅ Required · ⚠️ Strongly recommended · ⬜ Optional
 

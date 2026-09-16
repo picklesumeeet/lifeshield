@@ -49,9 +49,29 @@ export type LeadRow = {
   utm_campaign: string | null;
   utm_content: string | null;
   utm_term: string | null;
+  // Offer18 tracking (0005_offer18_conversions.sql).
+  tid: string | null;
+  adv_sub1: string | null;
+  adv_sub2: string | null;
+  adv_sub3: string | null;
+  adv_sub4: string | null;
+  adv_sub5: string | null;
 };
 
 export type LeadInsert = Partial<LeadRow>;
+
+export type Offer18PostbackRow = {
+  id: string;
+  lead_id: string | null;
+  tid: string;
+  status: string;
+  event: string | null;
+  request_body: Record<string, string>;
+  response_status: number | null;
+  response_body: string | null;
+  error: string | null;
+  attempted_at: string;
+};
 
 export type AdminUserRow = {
   user_id: string;
@@ -113,6 +133,16 @@ export type Database = {
         Row: LeadEventRow;
         Insert: Partial<LeadEventRow> & { raw_payload: unknown };
         Update: Partial<LeadEventRow>;
+        Relationships: [];
+      };
+      offer18_postbacks: {
+        Row: Offer18PostbackRow;
+        Insert: Partial<Offer18PostbackRow> & {
+          tid: string;
+          status: string;
+          request_body: Record<string, string>;
+        };
+        Update: Partial<Offer18PostbackRow>;
         Relationships: [];
       };
     };
