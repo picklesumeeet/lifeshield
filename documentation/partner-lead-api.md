@@ -243,6 +243,39 @@ If the lead originated from an Offer18-tracked click, include the Offer18 `tid` 
 | `tid` | string | Offer18 click id captured from the tracked landing. **`click_id` is accepted as an alias** — send whichever name you captured from the URL. |
 | `adv_sub1` – `adv_sub5` | string | Optional advertiser sub-parameters. Stored on the lead for reporting; not currently forwarded on the postback. |
 
+#### How the tid reaches you
+
+```
+1. User clicks an Offer18-tracked ad / link
+        ↓
+2. Offer18 registers the click and assigns a click_id
+        ↓ 302 redirect to your funnel's landing URL
+3. User lands on your funnel with `?click_id=<value>` appended
+        ↓ user completes the funnel
+4. You POST the lead to /api/v1/leads with that value as `tid` (or `click_id`)
+```
+
+#### What you need to do
+
+1. **Read the `click_id` query param from the landing URL.** Offer18 appends it as `?click_id=…` when redirecting from their tracking URL to your funnel entry page. Example:
+
+   ```
+   https://your-funnel.example.com/?click_id=D-22030402-1789576922-34G21G2G137-EVDLC9850
+   ```
+
+2. **Persist it across the funnel.** Store the value in `sessionStorage`, a hidden form field, or a first-party cookie so it survives page navigation. If you already carry UTM parameters through, use the same mechanism.
+
+3. **Include it in the final lead POST** as `tid` (or as `click_id` — the API accepts either):
+
+   ```json
+   {
+     "vendor_lead_id": "...",
+     "tid": "D-22030402-1789576922-34G21G2G137-EVDLC9850"
+   }
+   ```
+
+If no `click_id` is present in the landing URL (organic traffic, direct visit, etc.), simply omit the field — the lead is still accepted; we just don't fire the Offer18 postback for it.
+
 Rules:
 
 - Test leads (`test: true` or `cq_test_…` key) never trigger an Offer18 postback.
