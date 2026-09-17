@@ -177,7 +177,11 @@ curl -X POST https://coveragequalifier.com/api/v1/leads \
     "landing_page_url": "https://coveragequalifier.com/quotefc",
     "utm_source": "google",
     "utm_medium": "cpc",
-    "utm_campaign": "brand"
+    "utm_campaign": "brand",
+
+    "tid": "D-22030402-1789576922-34G21G2G137-EVDLC9850",
+    "adv_sub1": "campaign-abc",
+    "adv_sub2": "creative-42"
   }'
 ```
 
