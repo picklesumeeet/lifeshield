@@ -76,9 +76,60 @@ export async function postOffer18Conversion(input: Offer18ConversionInput) {
   const { error: auditErr } = await supabase.from("offer18_postbacks").insert({
     lead_id: input.leadId ?? null,
     tid: input.tid,
+    kind: "conversion_status",
+    url: url.toString(),
     status: input.status,
     event: input.event ?? null,
     request_body: body,
+    response_status: responseStatus,
+    response_body: responseBody,
+    error,
+  });
+  if (auditErr) console.error("[offer18] postback audit insert failed", auditErr);
+
+  return { ok: !error, responseStatus, responseBody, error };
+}
+
+/**
+ * Fires the merchant's Offer18 tracking postback URL to CREATE a conversion
+ * against a click. The URL template lives in OFFER18_POSTBACK_URL and must
+ * contain a `{tid}` placeholder — everything else (merchant id, offer id) is
+ * baked into the URL by Offer18 when they provision it.
+ */
+export async function fireOffer18Postback(input: {
+  tid: string;
+  leadId?: string | null;
+}) {
+  const template = process.env.OFFER18_POSTBACK_URL?.trim();
+  if (!template) {
+    throw new Error("OFFER18_POSTBACK_URL not set");
+  }
+  if (!template.includes("{tid}")) {
+    throw new Error("OFFER18_POSTBACK_URL must contain a {tid} placeholder");
+  }
+  const url = template.replace("{tid}", encodeURIComponent(input.tid));
+
+  const supabase = createAdmin();
+
+  let responseStatus: number | null = null;
+  let responseBody: string | null = null;
+  let error: string | null = null;
+
+  try {
+    const res = await fetch(url, { method: "GET" });
+    responseStatus = res.status;
+    responseBody = (await res.text()).slice(0, 4000);
+    if (!res.ok) error = `offer18 postback responded ${res.status}`;
+  } catch (e) {
+    error = (e as Error).message;
+  }
+
+  const { error: auditErr } = await supabase.from("offer18_postbacks").insert({
+    lead_id: input.leadId ?? null,
+    tid: input.tid,
+    kind: "postback",
+    url,
+    request_body: { url },
     response_status: responseStatus,
     response_body: responseBody,
     error,

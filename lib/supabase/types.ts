@@ -64,7 +64,9 @@ export type Offer18PostbackRow = {
   id: string;
   lead_id: string | null;
   tid: string;
-  status: string;
+  kind: "postback" | "conversion_status";
+  url: string | null;
+  status: string | null;
   event: string | null;
   request_body: Record<string, string>;
   response_status: number | null;
@@ -139,7 +141,6 @@ export type Database = {
         Row: Offer18PostbackRow;
         Insert: Partial<Offer18PostbackRow> & {
           tid: string;
-          status: string;
           request_body: Record<string, string>;
         };
         Update: Partial<Offer18PostbackRow>;

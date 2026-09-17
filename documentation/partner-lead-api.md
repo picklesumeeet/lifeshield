@@ -120,18 +120,18 @@ Leads posted with a `cq_test_…` key are stored with `is_test = true` in our da
 
 ### 4.4 Offer18 tracking (optional)
 
-If the lead originated from an Offer18-tracked click, include the transaction id so we can fire the conversion callback on your behalf. When `tid` is present on a **live** (non-test) lead that we successfully store, we automatically POST an `approve` (`status=1`) to the Offer18 Conversion API. Every attempt is recorded in our `offer18_postbacks` audit table.
+If the lead originated from an Offer18-tracked click, include the Offer18 `tid` so we can fire the tracking postback on your behalf. When `tid` is present on a **live** (non-test) lead that we successfully store, we automatically GET the merchant's Offer18 postback URL, which creates the conversion against that click. Every attempt is recorded in our `offer18_postbacks` audit table.
 
 | Field | Type | Description |
 |:---|:---|:---|
-| `tid` | string | Offer18 transaction id captured from the click. |
-| `adv_sub1` – `adv_sub5` | string | Optional advertiser sub-parameters forwarded verbatim to Offer18. |
+| `tid` | string | Offer18 click id captured from the tracked landing. |
+| `adv_sub1` – `adv_sub5` | string | Optional advertiser sub-parameters. Stored on the lead for reporting; not currently forwarded on the postback. |
 
 Rules:
 
-- Test leads (`test: true` or `cq_test_…` key) never trigger an Offer18 callback.
-- Duplicate submissions (§7) do not re-fire the callback.
-- Callback failures do not fail the lead — the lead is still stored and returned `200`.
+- Test leads (`test: true` or `cq_test_…` key) never trigger an Offer18 postback.
+- Duplicate submissions (§7) do not re-fire the postback.
+- Postback failures do not fail the lead — the lead is still stored and returned `200`.
 
 ---
 

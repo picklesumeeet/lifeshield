@@ -2,7 +2,7 @@ import { NextResponse, after } from "next/server";
 import { createAdmin } from "@/lib/supabase/admin";
 import { authenticateRequest } from "@/lib/api/apiKeyAuth";
 import { leadPayloadSchema } from "@/lib/api/leadPayloadSchema";
-import { postOffer18Conversion } from "@/lib/api/offer18";
+import { fireOffer18Postback } from "@/lib/api/offer18";
 import type { LeadInsert } from "@/lib/supabase/types";
 
 export const runtime = "nodejs";
@@ -200,23 +200,17 @@ export async function POST(req: Request) {
 
   await finalize("stored", inserted.id);
 
-  // Fire the Offer18 approve conversion after the response is sent. Real leads
-  // with a tid only — test leads and leads without a tid are skipped.
+  // Fire the Offer18 tracking postback after the response is sent so the
+  // conversion actually gets created on their end. Real leads with a tid only
+  // — test leads and leads without a tid are skipped.
   if (payload.tid && !(payload.test ?? false)) {
     const leadId = inserted.id;
     const tid = payload.tid;
-    const advSubs = {
-      adv_sub1: payload.adv_sub1 ?? null,
-      adv_sub2: payload.adv_sub2 ?? null,
-      adv_sub3: payload.adv_sub3 ?? null,
-      adv_sub4: payload.adv_sub4 ?? null,
-      adv_sub5: payload.adv_sub5 ?? null,
-    };
     after(async () => {
       try {
-        await postOffer18Conversion({ tid, status: "1", leadId, ...advSubs });
+        await fireOffer18Postback({ tid, leadId });
       } catch (e) {
-        console.error("[leads] offer18 conversion failed", e);
+        console.error("[leads] offer18 postback failed", e);
       }
     });
   }
