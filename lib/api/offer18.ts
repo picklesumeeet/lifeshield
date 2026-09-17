@@ -104,10 +104,12 @@ export async function fireOffer18Postback(input: {
   if (!template) {
     throw new Error("OFFER18_POSTBACK_URL not set");
   }
-  if (!template.includes("{tid}")) {
-    throw new Error("OFFER18_POSTBACK_URL must contain a {tid} placeholder");
+  // Accept both {tid} and RFC 6570 {+tid} — Offer18's docs use the latter.
+  const placeholder = /\{\+?tid\}/;
+  if (!placeholder.test(template)) {
+    throw new Error("OFFER18_POSTBACK_URL must contain a {tid} or {+tid} placeholder");
   }
-  const url = template.replace("{tid}", encodeURIComponent(input.tid));
+  const url = template.replace(placeholder, encodeURIComponent(input.tid));
 
   const supabase = createAdmin();
 
