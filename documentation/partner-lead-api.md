@@ -12,6 +12,122 @@ version: 1.0
 
 ---
 
+## Setup at a glance
+
+Everything you need on one page. Detailed sections follow below.
+
+### Endpoint
+
+| Setting | Value |
+|:---|:---|
+| **URL** | `https://coveragequalifier.com/api/v1/leads` |
+| **Method** | `POST` |
+| **Content-Type** | `application/json` |
+| **Max body size** | 64 KB |
+
+### Authentication
+
+Add your issued key as an HTTP header:
+
+```
+x-api-key: cq_live_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
+
+- Production keys start with `cq_live_`.
+- Sandbox keys start with `cq_test_` — leads posted with a test key are stored with `is_test = true` and are excluded from downstream distribution, billing, and reporting.
+- Keys are issued directly by CoverageQualifier. Do not embed in client-side code or public repos.
+
+### Required fields — lead identity
+
+- `vendor_lead_id` — your unique, stable id for the lead (idempotency key)
+- `first_name`, `last_name`
+- `email`, `phone`
+- `dob` (`YYYY-MM-DD`)
+- `zip` (5 or 9 digits)
+
+### Required fields — TCPA compliance
+
+All three are hard-required. Requests missing any of these are rejected with `400`.
+
+- `consent_given` — must be `true`
+- `consent_at` — UTC ISO 8601 timestamp of the moment the consumer submitted
+- `consent_language` — verbatim wording shown to the consumer
+
+### Strongly required — TCPA compliance (life insurance)
+
+Schema-optional but treated as required in practice. Leads missing these may be devalued or rejected during downstream review.
+
+- `trusted_form_cert_url` — TrustedForm certificate URL
+- `jornaya_lead_id` — Jornaya (LeadiD) token
+- `consumer_ip` — consumer's IP at submission (falls back to request IP if omitted)
+- `user_agent` — consumer's browser UA
+- `landing_page_url` — full URL of the submission page
+- `consenting_entity` — legal entity named in the consent language (e.g. `LifeShield Group LLC`)
+- `partner_list_version` — version identifier of the partner list in effect at submission
+- `partner_list_date` — effective date of that partner list version (`YYYY-MM-DD`)
+
+### Offer18 tracking (recommended)
+
+If the user arrived through an Offer18-tracked click, Offer18 appends `click_id` to your funnel's landing URL. Capture it and pass it back in the lead POST so we can auto-fire the Offer18 conversion postback.
+
+- Field name: **`tid`** (`click_id` is also accepted as an alias)
+- Only live leads with a `tid` trigger the postback. Test leads and duplicates never do.
+- Postback failures do not fail the lead — it still stores and returns `200`.
+
+### Minimal working example
+
+```bash
+curl -X POST https://coveragequalifier.com/api/v1/leads \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: cq_live_YOUR_KEY" \
+  -d '{
+    "vendor_lead_id": "abc-123",
+
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "email": "jane@example.com",
+    "phone": "+19195551234",
+    "dob": "1990-01-15",
+    "zip": "78701",
+
+    "consent_given": true,
+    "consent_at": "2026-09-17T15:30:00Z",
+    "consent_language": "<verbatim consent text shown to consumer>",
+    "consenting_entity": "LifeShield Group LLC",
+    "partner_list_version": "v2",
+    "partner_list_date": "2026-09-07",
+    "trusted_form_cert_url": "https://cert.trustedform.com/abc123",
+    "jornaya_lead_id": "12345678-1234-1234-1234-123456789012",
+
+    "consumer_ip": "203.0.113.12",
+    "user_agent": "Mozilla/5.0",
+    "landing_page_url": "https://coveragequalifier.com/quote?click_id=D-...",
+
+    "tid": "D-22030402-1789576922-34G21G2G137-EVDLC9850"
+  }'
+```
+
+### Expected responses
+
+**New lead accepted (`200`):**
+```json
+{ "ok": true, "lead_id": "8e2a1c7f-4d1a-4e7d-9b60-4d3f5c9a1b2e" }
+```
+
+**Duplicate — same `vendor_lead_id` under your key (`200`):**
+```json
+{ "ok": true, "lead_id": "8e2a1c7f-...", "duplicate": true }
+```
+
+**Validation failure (`400`):**
+```json
+{ "error": "invalid payload", "issues": [{ "path": "email", "code": "invalid_string", "message": "Invalid email" }] }
+```
+
+See §6 for the complete response contract, §7 for idempotency semantics, and §9 for compliance details.
+
+---
+
 ## 1. Overview
 
 This document describes the HTTP API for posting qualified life-insurance leads to CoverageQualifier. Partners integrate by making authenticated `POST` requests to a single endpoint. Each accepted lead is stored in our system of record, deduplicated, and made available for downstream distribution.
@@ -124,7 +240,7 @@ If the lead originated from an Offer18-tracked click, include the Offer18 `tid` 
 
 | Field | Type | Description |
 |:---|:---|:---|
-| `tid` | string | Offer18 click id captured from the tracked landing. |
+| `tid` | string | Offer18 click id captured from the tracked landing. **`click_id` is accepted as an alias** — send whichever name you captured from the URL. |
 | `adv_sub1` – `adv_sub5` | string | Optional advertiser sub-parameters. Stored on the lead for reporting; not currently forwarded on the postback. |
 
 Rules:

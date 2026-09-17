@@ -20,8 +20,22 @@ const boolCoerce = z
 
 const intCoerce = z.coerce.number().int();
 
-export const leadPayloadSchema = z
-  .object({
+// Accept `click_id` as an alias for `tid` — vendors typically capture the
+// Offer18 param verbatim (Offer18 appends it to landing URLs as `click_id`),
+// so we normalize it into `tid` before validation. Explicit `tid` wins if both
+// are present.
+export const leadPayloadSchema = z.preprocess(
+  (v) => {
+    if (!v || typeof v !== "object" || Array.isArray(v)) return v;
+    const obj = { ...(v as Record<string, unknown>) };
+    if (obj.click_id != null && (obj.tid == null || obj.tid === "")) {
+      obj.tid = obj.click_id;
+    }
+    delete obj.click_id;
+    return obj;
+  },
+  z
+    .object({
     // Vendor tracking (required for idempotency).
     vendor_lead_id: nonEmptyString,
     test: boolCoerce.optional().default(false),
@@ -83,9 +97,10 @@ export const leadPayloadSchema = z
     adv_sub4: optionalString,
     adv_sub5: optionalString,
   })
-  .refine((v) => v.consent_given === true, {
-    path: ["consent_given"],
-    message: "consent_given must be true",
-  });
+    .refine((v) => v.consent_given === true, {
+      path: ["consent_given"],
+      message: "consent_given must be true",
+    }),
+);
 
 export type LeadPayload = z.infer<typeof leadPayloadSchema>;
