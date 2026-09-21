@@ -121,7 +121,12 @@ curl -X POST https://coveragequalifier.com/api/v1/leads \
 
 **Validation failure (`400`):**
 ```json
-{ "error": "invalid payload", "issues": [{ "path": "email", "code": "invalid_string", "message": "Invalid email" }] }
+{
+  "error": "invalid payload",
+  "issues": [
+    { "path": "email", "code": "invalid_string", "message": "Invalid email" }
+  ]
+}
 ```
 
 See §6 for the complete response contract, §7 for idempotency semantics, and §9 for compliance details.
@@ -314,7 +319,7 @@ curl -X POST https://coveragequalifier.com/api/v1/leads \
 
     "consent_given": true,
     "consent_at": "2026-09-14T02:19:00Z",
-    "consent_language": "I agree to be contacted. By checking this box and clicking Get my quote, I give my express written consent for LifeShield Group LLC and the licensed insurance agents and agencies on its partner list to contact me at the phone number and email I provided, including by automatic telephone dialing system, artificial or prerecorded voice, and text message. Consent is not a condition of purchase.",
+    "consent_language": "<verbatim consent text shown to consumer — see §9>",
     "consenting_entity": "LifeShield Group LLC",
     "partner_list_version": "v2",
     "partner_list_date": "2026-09-07",
