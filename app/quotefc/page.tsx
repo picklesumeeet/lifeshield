@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Header } from "@/components/site/Header";
 
 const HOST =
@@ -9,6 +9,7 @@ const VARIANT = process.env.NEXT_PUBLIC_CQ_VARIANT ?? "c";
 
 export default function QuoteFcPage() {
   const holderRef = useRef<HTMLDivElement>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const holder = holderRef.current;
@@ -30,6 +31,9 @@ export default function QuoteFcPage() {
     frame.loading = "eager";
     frame.style.cssText = "width:100%;border:0;display:block;height:720px";
     frame.setAttribute("allow", "clipboard-write");
+
+    const onLoad = () => setLoaded(true);
+    frame.addEventListener("load", onLoad);
     holder.appendChild(frame);
 
     const onMessage = (e: MessageEvent) => {
@@ -48,6 +52,7 @@ export default function QuoteFcPage() {
 
     return () => {
       window.removeEventListener("message", onMessage);
+      frame.removeEventListener("load", onLoad);
       holder.removeChild(frame);
     };
   }, []);
@@ -59,9 +64,33 @@ export default function QuoteFcPage() {
         <div
           id="cq-form-c"
           ref={holderRef}
-          style={{ maxWidth: 680, margin: "0 auto" }}
-        />
+          style={{ maxWidth: 680, margin: "0 auto", position: "relative" }}
+        >
+          {!loaded && <QuoteSkeleton />}
+        </div>
       </main>
+    </div>
+  );
+}
+
+function QuoteSkeleton() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading your quote form"
+      className="w-full bg-white rounded-2xl p-6 md:p-8 shadow-sm animate-pulse"
+      style={{ minHeight: 720 }}
+    >
+      <div className="h-7 bg-mint-100 rounded w-2/3 mb-3" />
+      <div className="h-4 bg-mint-100 rounded w-1/2 mb-8" />
+      <div className="space-y-4">
+        <div className="h-12 bg-mint-100 rounded-lg" />
+        <div className="h-12 bg-mint-100 rounded-lg" />
+        <div className="h-12 bg-mint-100 rounded-lg" />
+        <div className="h-12 bg-mint-100 rounded-lg" />
+      </div>
+      <div className="h-12 bg-mint-200 rounded-full mt-10 w-full" />
+      <p className="sr-only">Loading your quote form…</p>
     </div>
   );
 }

@@ -15,6 +15,9 @@ const manrope = Manrope({
   display: "swap",
 });
 
+const CQ_FUNNEL_HOST =
+  process.env.NEXT_PUBLIC_CQ_HOST ?? "https://funnel.savvy-marketing.io";
+
 export const metadata: Metadata = {
   title: `${brand.name} — ${brand.tagline}`,
   description:
@@ -31,6 +34,12 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${manrope.variable} h-full antialiased`}
     >
+      <head>
+        {/* Open the TLS connection to the funnel host as early as possible so
+            the iframe on /quotefc isn't the first thing to pay for DNS + TLS. */}
+        <link rel="preconnect" href={CQ_FUNNEL_HOST} crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href={CQ_FUNNEL_HOST} />
+      </head>
       <body className="min-h-full flex flex-col bg-cream text-ink-900">
         {children}
       </body>
